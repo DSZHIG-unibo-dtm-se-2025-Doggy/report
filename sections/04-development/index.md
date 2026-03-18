@@ -6,37 +6,47 @@ nav_order: 5
 
 # Development
 
-## DVCS
+## DVCS Conventions
 
-- This section explains how DVCS was used, in particular:
-    - Conventions on the usage of branches
-    - Conventions for commit messages 
-    - Conventions for pull requests, issues, code reviews, etc.
+The project uses Git on GitHub as a distributed version control system. Development follows a simple but structured workflow.
 
-## Implementation details
+The main branch always contains stable code.
 
-- Which network protocols should be used? Why?
-    - Examples: UDP, TCP, HTTP, WebSockets, gRPC, XMPP, AMQP, MQTT, etc.
+Commit messages follow the Conventional Commits style: `type(optional context): short description`. For example: `feat(api): add /api/dog-from-photo endpoint`. This makes it easy to understand which part of the project a change affects and also supports automatic versioning and changelog generation during the release process.
 
-- How should in-transit data be represented? Why?
-    - Examples: JSON, XML, YAML, Protocol Buffers, etc.
+Issues are used to track bugs, enhancements, and planned improvements, creating a clear backlog of work and improving collaboration.
 
-- How should databases be queried? Why?
-    - Examples: SQL, NoSQL, etc.
+This lightweight workflow was chosen because it balances clarity and speed, making it efficient even for a small development team.
 
-- How should components be authenticated? Why?
-    - Examples: OAuth, JWT, etc.
+## Implementation Details
 
-- How should components be authorized? Why?
-    - Examples: RBAC, ABAC, etc.
+Since Doggy is a local, single-user desktop web app (browser-based), many distributed-system concerns are intentionally avoided to keep the project simple and fast:
 
-## Technological details
+- Network protocols: none are needed; interactions happen locally with backend API calls from frontend to backend on the same host.
+- Data representation: exchanged data is JSON over HTTP.
+- Databases: not used. Model input and response data are handled in memory.
+- Authentication and authorization: not applicable, as there are no user accounts or online features.
 
-- Which programming languages, frameworks, libraries, and tools were used? Why?
-    - Examples: Java, Python, C++, JavaScript, React, Angular, Vue, etc.
+Avoiding these elements keeps the system lightweight, fast, and easy to deploy.
 
-- Which libraries do the project depend on? Why?
-    - Examples: React, Redux, Express, etc.
+## Technological Details
 
-- Are there any other external technology or service dependencies? Why?
-    - Examples: Google Maps, Firebase, etc.
+The project is developed in Python 3.12+ for the backend and TypeScript for frontend. The main dependencies are:
+
+- Backend:
+  - FastAPI: web API framework used for routing and HTTP handling.
+  - transformers (Hugging Face): model pipelines (`zero-shot-image-classification`, `image-classification`).
+  - Pillow: image IO.
+- Frontend:
+  - React + Vite + TypeScript: UI framework.
+  - tailwindcss: styling.
+
+All application logic and static assets are local. There are no external service dependencies except model weights fetched by transformers (can be pre-cached in production if needed).
+
+This stack was selected because it ensures:
+- Accessibility: Python/JS are widely supported.
+- Performance: Frontend is fast and backend inference is localized.
+- Portability: no external DB or auth needed.
+
+The team follows PEP 8 for backend style consistency.
+Using an IDE such as VS Code is recommended, as it provides automatic formatting, error checking, and integrated Git support.
