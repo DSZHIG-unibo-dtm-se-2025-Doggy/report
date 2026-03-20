@@ -29,12 +29,12 @@ The system uses a FastAPI backend and React frontend with ML inference.
 
 | ID | Description | Acceptance Criteria |
 |----|-------------|---------------------|
-| **FR1** | `POST /api/dog-from-photo` accepts file and returns result. | JSON contains `breed`, `raw_predictions`, `advice`; or `error` for non-dog input. |
-| **FR2** | `POST /api/dog-advice?breed=<name>` returns breed advice. | JSON contains `advice`. |
-| **FR3** | Non-dog input gets a clear error. | JSON contains `error`: "Sorry, this is not a dog. Please try again". |
-| **FR4** | Backend uses DogRecognition and LLM modules. | `backend/Features/DogRecognition/dog_recognition.py` and `backend/Features/LLM/llm_engine.py` are active. |
-| **FR5** | Health endpoint available. | `GET /` returns `{"status":"ok","message":"backend is running"}`. |
-| **FR6** | User can retry upload flows. | UI allows multiple upload attempts.
+| <a id="fr1"></a>**FR1** | `POST /api/dog-from-photo` accepts file and returns result. | JSON contains `breed`, `raw_predictions`, `advice`; or `error` for non-dog input. |
+| <a id="fr2"></a>**FR2** | `POST /api/dog-advice?breed=<name>` returns breed advice. | JSON contains `advice`. |
+| <a id="fr3"></a>**FR3** | Non-dog input gets a clear error. | JSON contains `error`: "Sorry, this is not a dog. Please try again". |
+| <a id="fr4"></a>**FR4** | Backend uses DogRecognition and LLM modules. | `backend/Features/DogRecognition/dog_recognition.py` and `backend/Features/LLM/llm_engine.py` are active. |
+| <a id="fr5"></a>**FR5** | Health endpoint available. | `GET /` returns `{"status":"ok","message":"backend is running"}`. |
+| <a id="fr6"></a>**FR6** | User can retry upload flows. | UI allows multiple upload attempts. |
 
 ### Non-Functional Requirements (NFR)
 
@@ -50,11 +50,11 @@ The system uses a FastAPI backend and React frontend with ML inference.
 
 | ID | Description | Justification | Acceptance Criteria |
 |----|-------------|--------------|---------------------|
-| **IR1** | Python 3 + FastAPI backend. | Existing codebase language and framework. | `python -m uvicorn backend.main:app` runs. |
-| **IR2** | React + Vite + TypeScript frontend. | Existing web project stack. | `npm run build` passes. |
-| **IR3** | Test tooling `pytest`, `vitest`, `ruff`. | CI standard. | all tests pass. |
-| **IR4** | Docker and Fly deployment config exist. | Provided project files. | container builds and starts. |
-| **IR5** | Env var configuration. | security in deployments. | settings driven via env.
+| <a id="ir1"></a>**IR1** | Python 3 + FastAPI backend. | Existing codebase language and framework. | `python -m uvicorn backend.main:app` runs. |
+| <a id="ir2"></a>**IR2** | React + Vite + TypeScript frontend. | Existing web project stack. | `npm run build` passes. |
+| <a id="ir3"></a>**IR3** | Test tooling `pytest`, `vitest`, `ruff`. | CI standard. | all tests pass. |
+| <a id="ir4"></a>**IR4** | Docker and Fly deployment config exist. | Provided project files. | container builds and starts. |
+| <a id="ir5"></a>**IR5** | Env var configuration. | security in deployments. | settings driven via env. |
 
 ---
 
@@ -72,9 +72,9 @@ The system uses a FastAPI backend and React frontend with ML inference.
 
 ## Acceptance Criteria
 
-- FR1: `/api/dog-from-photo` returns breed/advice (or error response). 
-- FR2: `/api/dog-advice` returns advice.
-- FR3: non-dog returns `error` message.
+- [FR1](#fr1): `/api/dog-from-photo` returns breed/advice (or error response). 
+- [FR2](#fr2): `/api/dog-advice` returns advice.
+- [FR3](#fr3): non-dog returns `error` message.
 - NFR1: 95% < 2s.
-- IR2: `npm run build` passes.
-- IR3: `pytest` + `vitest` + `ruff` pass.
+- [IR2](#ir2): `npm run build` passes.
+- [IR3](#ir3): `pytest` + `vitest` + `ruff` pass.
