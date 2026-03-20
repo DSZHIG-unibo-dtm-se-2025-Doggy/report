@@ -200,11 +200,66 @@ Repositories/factories note: repositories are not used in the current scope (no 
 
 ## Interaction
 
-- How do components *communicate*? *When*? *What*?
+All component communication is **on-demand** — triggered only when the user submits an image. There is no background polling, WebSocket connection, or event bus.
 
-- Which **interaction patterns** do they enact?
+### Communication channels and data exchanged
 
-> UML sequence diagrams are welcome here
+| From | To | When | Protocol | What |
+|------|----|------|----------|------|
+| Web Client | Backend API | User submits image | HTTP POST `/api/dog-from-photo` | `multipart/form-data` with image file |
+| Backend API | Web Client | Analysis complete | HTTP response (JSON) | `{breed, advice, raw_predictions}` or `{error}` |
+| Backend API | `DogRecognitionModel` | On every photo request | In-process method call | image file path |
+| `DogRecognitionModel` | Backend API | After dog check | Return value | `bool` (is dog or not) |
+| `DogRecognitionModel` | Backend API | After breed prediction | Return value | list of `{label, score}` (top 3) |
+| Backend API | `DogLLMEngine` | After breed is known | In-process method call | breed name string |
+| `DogLLMEngine` | HuggingFace Inference API | On advice request | HTTPS (chat completion) | prompt with breed name, model config |
+| HuggingFace Inference API | `DogLLMEngine` | Response | HTTPS | generated advice text |
+
+### Interaction patterns
+
+**Frontend ↔ Backend: Request/Response over HTTP**
+
+The frontend sends a single `POST /api/dog-from-photo` request with the image as `multipart/form-data`. It then waits synchronously for the backend to complete all processing steps and return one aggregated JSON response. The frontend shows a loading state during this wait.
+
+On error (not a dog, model failure, invalid input), the backend returns `{"error": "..."}` and the frontend displays the message.
+
+**Backend ↔ ML models: Synchronous in-process calls**
+
+`DogRecognitionModel` and `DogLLMEngine` are instantiated once at startup (lazy initialization on first request) and reused across all requests. The backend calls their methods directly — no serialization, no network. Execution is sequential:
+
+1. `model_instance.is_dog(temp_path)` — runs CLIP zero-shot classification
+2. `model_instance.predict(temp_path)` — runs ViT breed classification (only if step 1 passes)
+3. `llm_instance.generate_advice(top_breed)` — called after step 2
+
+**Backend → LLM: Remote Procedure Call (HTTPS)**
+
+`DogLLMEngine` calls the HuggingFace Inference API via `InferenceClient.chat_completion()`. This is the only outbound network call in the request flow. The call is synchronous — the backend awaits the response before returning to the frontend.
+
+### Sequence diagram
+
+```
+User        Web Client       Backend API      DogRecognitionModel    HuggingFace API
+ |               |                |                    |                    |
+ |--select img-->|                |                    |                    |
+ |               |--POST /api/dog-from-photo---------->|                    |
+ |               |    (multipart/form-data)            |                    |
+ |               |                |--is_dog(path)----->|                    |
+ |               |                |<--bool (true/false)|                    |
+ |               |                |                    |                    |
+ |               |  [if not dog]  |                    |                    |
+ |               |<--{error}------|                    |                    |
+ |               |                |                    |                    |
+ |               |  [if dog]      |                    |                    |
+ |               |                |--predict(path)---->|                    |
+ |               |                |<--[{label,score}]--|                    |
+ |               |                |                    |                    |
+ |               |                |--generate_advice(breed)-->             |
+ |               |                |    (chat_completion HTTPS)------------>|
+ |               |                |<--------------------------advice text---|
+ |               |                |                    |                    |
+ |               |<--{breed, advice, raw_predictions}--|                    |
+ |<--render------|                |                    |                    |
+```
 
 ## Behaviour
 
