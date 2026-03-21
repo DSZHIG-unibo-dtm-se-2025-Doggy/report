@@ -22,12 +22,12 @@ This lightweight workflow was chosen because it balances clarity and speed, maki
 
 Since Doggy is a local, single-user desktop web app (browser-based), many distributed-system concerns are intentionally avoided to keep the project simple and fast:
 
-- Network protocols: none are needed; interactions happen locally with backend API calls from frontend to backend on the same host.
+- Network protocols: locally the frontend calls the backend directly over HTTP; the backend makes one outbound HTTPS call to the HuggingFace Inference API per request.
 - Data representation: exchanged data is JSON over HTTP.
 - Databases: not used. Model input and response data are handled in memory.
-- Authentication and authorization: not applicable, as there are no user accounts or online features.
+- Authentication and authorization: not applicable for end-users, as there are no user accounts. Backend-to-LLM authentication uses `HF_TOKEN` from environment variables.
 
-Avoiding these elements keeps the system lightweight, fast, and easy to deploy.
+Avoiding a database and user auth keeps the system lightweight and easy to deploy.
 
 ## Technological Details
 
@@ -37,11 +37,12 @@ The project is developed in Python 3.12+ for the backend and TypeScript for fron
   - FastAPI: web API framework used for routing and HTTP handling.
   - transformers (Hugging Face): model pipelines (`zero-shot-image-classification`, `image-classification`).
   - Pillow: image IO.
+  - huggingface-hub (`InferenceClient`): outbound HTTPS calls to HuggingFace Inference API for LLM advice generation.
 - Frontend:
   - React + Vite + TypeScript: UI framework.
   - tailwindcss: styling.
 
-All application logic and static assets are local. There are no external service dependencies except model weights fetched by transformers (can be pre-cached in production if needed).
+The only external runtime dependency is the HuggingFace Inference API (requires a valid `HF_TOKEN`). ML model weights are fetched by `transformers` on first use and cached locally afterwards.
 
 This stack was selected because it ensures:
 - Accessibility: Python/JS are widely supported.

@@ -1,0 +1,51 @@
+@startuml
+skinparam activityFontSize 13
+skinparam ArrowColor #444
+skinparam ActivityBorderColor #555
+skinparam ActivityBackgroundColor #f9f9f9
+skinparam ActivityDiamondBackgroundColor #fff3cd
+skinparam NoteBackgroundColor #e8f4f8
+
+title Doggy – Request Activity Diagram (POST /api/dog-from-photo)
+
+start
+
+:User selects image and clicks Analyze;
+:Web Client sends POST /api/dog-from-photo\n(multipart/form-data);
+
+partition "Backend API" {
+
+    :Receive UploadFile;
+
+    if (dog_model initialized?) then (no)
+        :Instantiate DogRecognitionModel\n(load CLIP + ViT pipelines);
+    else (yes)
+        :Reuse cached dog_model;
+    endif
+
+    if (llm initialized?) then (no)
+        :Instantiate DogLLMEngine\n(create InferenceClient);
+    else (yes)
+        :Reuse cached llm;
+    endif
+
+    :Save image to temp file\n(temp_<uuid>.jpg);
+
+    :Call model.is_dog(temp_path)\n[CLIP zero-shot classification];
+
+    if (is_dog?) then (false)
+        :Return error JSON\n{"error": "not a dog"};
+        stop
+    else (true)
+        :Call model.predict(temp_path)\n[ViT breed classification → top 3];
+        :Normalize top breed label\n(strip aliases after comma);
+        :Call llm.generate_advice(breed)\n[HTTPS → HuggingFace Inference API];
+        :Return JSON\n{breed, advice, raw_predictions};
+    endif
+}
+
+:Web Client renders breed + advice;
+:User sees result;
+
+stop
+@enduml

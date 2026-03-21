@@ -48,7 +48,7 @@ Use GitHub issues for planning and backlog; no additional tools are required.
    python -m venv venv
    venv\Scripts\activate    # Windows
    # source venv/bin/activate  # Linux/Mac
-   pip install -r requirements-dev.txt
+   pip install -r requirements.txt -r requirements-dev.txt
    ```
 
 3. Frontend dependencies:
@@ -58,12 +58,12 @@ Use GitHub issues for planning and backlog; no additional tools are required.
    ```
 
 4. Run tests:
-   - Backend: `cd ../backend && python -m pytest --cov=backend --cov-report=term-missing tests`
-   - Frontend: `cd ../web && npm run vitest -- --run`
+   - Backend: from project root — `PYTHONPATH=. python -m pytest --cov=backend --cov-report=term-missing backend/tests`
+   - Frontend: `cd ../web && npm run test:ci`
 
 5. Start app:
-   - Backend: `cd ../backend && python -m uvicorn backend.main:app --reload --port 5173`
-   - Frontend: `cd ../web && npm run dev -- --host 0.0.0.0 --port 5174`
+   - Backend: from project root — `python -m uvicorn backend.main:app --reload --port 8000`
+   - Frontend: `cd ../web && npm run dev -- --host 0.0.0.0 --port 5173`
 
 ---
 

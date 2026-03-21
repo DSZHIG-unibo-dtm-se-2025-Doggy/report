@@ -13,13 +13,12 @@ The app is designed to be simple and requires only a browser and a local image f
 
 ## Starting the app
 
-1. Start the backend service:
-   - `cd backend`
-   - `python -m uvicorn backend.main:app --reload --port 5173`
+1. Start the backend service (from project root):
+   - `python -m uvicorn backend.main:app --reload --port 8000`
 2. Start the frontend app:
    - `cd web`
-   - `npm run dev -- --host 0.0.0.0 --port 5174`
-3. Open your browser and go to `http://localhost:5174`.
+   - `npm run dev -- --host 0.0.0.0 --port 5173`
+3. Open your browser and go to `http://localhost:5173`.
 
 The web app should open and show the Dog Breed Identifier interface, with image upload and analysis controls.
 

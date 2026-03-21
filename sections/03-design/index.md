@@ -263,24 +263,54 @@ User        Web Client       Backend API      DogRecognitionModel    HuggingFace
 
 ## Behaviour
 
-- How does **each** component *behave* individually (e.g., in *response* to *events* or messages)?
-    + Some components may be *stateful*, others *stateless*
+### Component behaviour overview
 
-- Which components are in charge of updating the **state** of the system? *When*? *How*?
+Each component is stateless with respect to individual requests. The only stateful element is the Web Client's local UI state, scoped to a single user session.
 
-> UML state diagrams or activity diagrams are welcome here
+| Component | Stateful? | Behaviour |
+|---|---|---|
+| Web Client (React) | **Stateful** (UI) | Maintains local React state: `isAnalyzing`, `result`, `error`. Reacts to user events (file select, submit) and API responses. Resets state on each new request. |
+| Backend API (FastAPI) | **Stateless** | Each HTTP request is independent. Lazy-initialises `DogRecognitionModel` and `DogLLMEngine` on first call; subsequent requests reuse the cached instances. Orchestrates the full pipeline and returns a single aggregated JSON response. |
+| DogRecognitionModel | **Stateless** (models cached) | Instantiated once on first use. On each call: opens image with Pillow, runs CLIP zero-shot check (`is_dog`), then ViT breed classification (`predict`). Returns raw results; holds no per-request state. |
+| DogLLMEngine | **Stateless** | Instantiated once on first use. On each call sends a single HTTPS `chat_completion` request to the HuggingFace Inference API and returns the text response. |
+
+### State updates
+
+Two components are responsible for state changes:
+
+**Web Client** — updates UI state in response to user actions and API outcomes:
+- on submit: sets `isAnalyzing = true`, clears previous `result` and `error`
+- on response received: populates `result` or `error`, resets `isAnalyzing = false`
+
+**Backend API** — owns one implicit shared state: the singleton model instances (`dog_model`, `llm`) held in module-level globals. Initialised lazily on the first incoming request and reused for all subsequent ones. Never mutated after initialisation.
+
+### Activity diagram
+
+The diagram below shows the full request flow from image upload to rendered result, covering lazy initialisation and the dog-check decision branch.
+
+![Activity Diagram – POST /api/dog-from-photo](../../pictures/behaviour-activity.png)
 
 ## Data-related aspects (in case persistent storage is needed)
 
-- Is there any data that needs to be stored?
-    - *What* data? *Where*? *Why*?
+Doggy does not use persistent storage. All data is handled in-memory and discarded after each response. There is no database, no file store, and no session persistence.
 
-- How should **persistent data** be **stored**? Why?
-    - e.g., relations, documents, key-value, graph, etc.
+### No data needs to be stored
 
-- Which components perform queries on the database?
-    - *When*? *Which* queries? *Why*?
-    - Concurrent read? Concurrent write? Why?
+All information exchanged during a request — the uploaded image, breed predictions, and generated advice — exists only for the duration of that request:
+- **uploaded image**: saved to a temporary file (`temp_<uuid>.jpg`) during processing, not persisted
+- **breed predictions**: computed in-memory, returned in the response, discarded afterwards
+- **advice text**: generated per request, returned in the response, not cached
 
-- Is there any data that needs to be shared between components?
-    - *Why*? *What* data?
+Why no storage: the application is a single-user local tool with no history, accounts, or audit requirements. Statefulness would add complexity with no benefit in the current scope.
+
+### No database queries
+
+No component performs database queries. There is no read or write access to any external or embedded data store. Concurrent read/write concerns do not apply.
+
+### Shared data between components
+
+The only shared data is the **singleton model instances** held in backend module-level globals:
+- `dog_model` — shared instance of `DogRecognitionModel`, used by every incoming request
+- `llm` — shared instance of `DogLLMEngine`, used by every incoming request
+
+Why shared: loading ML models on every request would be prohibitively slow. Both instances are read-only after initialisation — they hold no mutable per-request state, so sharing them is safe under concurrent load.
