@@ -6,19 +6,45 @@ nav_order: 10
 
 # User Guide
 
-This section explains how to use Doggy - Dog Breed Identifier from the user’s point of view, assuming the project is already running (backend and frontend started).  
-The app is designed to be simple and requires only a browser and a local image file.
+This section explains how to use Doggy - Dog Breed Identifier from the user’s point of view.
+The app can be started in three different ways, depending on your environment.
 
 ---
 
 ## Starting the app
 
-1. Start the backend service (from project root):
+Choose one startup mode:
+
+### Option A - Run App task (recommended)
+
+Use this when you want the fastest local start from VS Code.
+
+1. Open the project in VS Code.
+2. Run `Bootstrap` first (this installs backend/frontend dependencies and prepares the local environment).
+3. Click `Run App`.
+   - This starts backend and frontend automatically (`Backend: Run API` on port `8000`, `Frontend: Run UI` on port `5173`).
+4. Open `http://localhost:5173`.
+
+### Option B - Manual local run
+
+Use this when you need full control over logs and commands.
+
+1. Start backend (from project root):
    - `python -m uvicorn backend.main:app --reload --port 8000`
-2. Start the frontend app:
+2. Start frontend:
    - `cd web`
    - `npm run dev -- --host 0.0.0.0 --port 5173`
-3. Open your browser and go to `http://localhost:5173`.
+3. Open `http://localhost:5173`.
+
+### Option C - Fly.io deployed app
+
+Use this when you want to test the online deployed version.
+
+1. Open the deployed frontend URL in a browser.
+2. Ensure the frontend points to the deployed backend base URL.
+3. Upload an image and verify that response data is returned.
+
+Note: if Fly.io is unavailable, analysis and advice generation may fail.
 
 The web app should open and show the Dog Breed Identifier interface, with image upload and analysis controls.
 
@@ -57,7 +83,9 @@ If an error occurs, a message is shown and you can retry with another photo.
 
 ## Troubleshooting
 
-- If the backend fails to start, check console logs for missing packages (`transformers`, `pillow`).
-- If the frontend fails, run `npm install` and verify Vite server is up.
-- If response is slow, check model loading errors in backend logs.
+- If the app does not open in browser, verify frontend is running on `http://localhost:5173`.
+- If API calls fail locally, verify backend is running on port `8000` and `VITE_API_BASE_URL` points to it.
+- If the backend fails to start, check logs for missing packages (`transformers`, `pillow`) and missing `HF_TOKEN`.
+- If Fly.io deployment does not respond, retry later or switch to a local run mode.
+- If response is slow on first request, wait for model lazy loading to finish.
 

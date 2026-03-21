@@ -26,7 +26,7 @@ Use GitHub issues for planning and backlog; no additional tools are required.
 
 - Backend is Python 3.12, style follows PEP 8.
 - Frontend is TypeScript + React; follow common React best practices.
-- File names use snake_case for Python and kebab-case for frontend pages/components where appropriate.
+- File names use snake_case for Python. Frontend currently uses mostly PascalCase for React pages/components; keep existing style consistent within each folder.
 - Commit messages use Conventional Commits format:
   - `feat(api): add /api/dog-from-photo endpoint`
   - `fix(core): handle non-dog upload with error message`
@@ -100,7 +100,7 @@ Use GitHub issues for planning and backlog; no additional tools are required.
   - Backend: `ruff` (check with `python -m ruff check backend`)
   - Frontend: `eslint`/`prettier` (via `npm run lint`)
 
-- CI/CD: GitHub Actions workflows in `.github/workflows` (e.g., `check.yml`, `deploy.yml`). Ensure all tests pass before PR merge.
+- CI/CD: GitHub Actions workflows in `.github/workflows` (`backend-ci.yml`, `web-ci.yml`, `backend-deploy.yml`). Ensure all tests pass before PR merge.
 
 - Browser tools: use Chrome/Edge DevTools and React DevTools for front-end debugging.
 - Model debugging: inspect backend logs for `transformers` model load paths and gather latency from the `/api/dog-from-photo` request timings.

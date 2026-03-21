@@ -1,0 +1,36 @@
+@startuml
+skinparam backgroundColor white
+skinparam sequenceArrowThickness 1
+skinparam sequenceParticipant underline
+skinparam responseMessageBelowArrow true
+
+title Doggy - Interaction Sequence (POST /api/dog-from-photo)
+
+actor User
+participant "Web Client" as Web
+participant "Backend API" as Api
+participant "DogRecognitionModel" as Model
+participant "DogLLMEngine" as LLM
+participant "HuggingFace API" as HF
+
+User -> Web : select image
+Web -> Api : POST /api/dog-from-photo\n(multipart/form-data)
+
+Api -> Model : is_dog(temp_path)
+Model --> Api : bool is_dog
+
+alt not a dog
+  Api --> Web : {"error": "Sorry, this is not a dog. Please try again"}
+  Web --> User : render error
+else dog detected
+  Api -> Model : predict(temp_path)
+  Model --> Api : [{label, score}] top-3
+  Api -> LLM : generate_advice(top_breed)
+  LLM -> HF : chat_completion(prompt)
+  HF --> LLM : advice text
+  LLM --> Api : advice
+  Api --> Web : {breed, advice, raw_predictions}
+  Web --> User : render result
+end
+
+@enduml

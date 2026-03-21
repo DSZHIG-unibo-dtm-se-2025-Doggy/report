@@ -225,7 +225,7 @@ On error (not a dog, model failure, invalid input), the backend returns `{"error
 
 **Backend ↔ ML models: Synchronous in-process calls**
 
-`DogRecognitionModel` and `DogLLMEngine` are instantiated once at startup (lazy initialization on first request) and reused across all requests. The backend calls their methods directly — no serialization, no network. Execution is sequential:
+`DogRecognitionModel` and `DogLLMEngine` are instantiated lazily on the first request and reused across all requests. The backend calls their methods directly — no serialization, no network. Execution is sequential:
 
 1. `model_instance.is_dog(temp_path)` — runs CLIP zero-shot classification
 2. `model_instance.predict(temp_path)` — runs ViT breed classification (only if step 1 passes)
@@ -237,29 +237,7 @@ On error (not a dog, model failure, invalid input), the backend returns `{"error
 
 ### Sequence diagram
 
-```
-User        Web Client       Backend API      DogRecognitionModel    HuggingFace API
- |               |                |                    |                    |
- |--select img-->|                |                    |                    |
- |               |--POST /api/dog-from-photo---------->|                    |
- |               |    (multipart/form-data)            |                    |
- |               |                |--is_dog(path)----->|                    |
- |               |                |<--bool (true/false)|                    |
- |               |                |                    |                    |
- |               |  [if not dog]  |                    |                    |
- |               |<--{error}------|                    |                    |
- |               |                |                    |                    |
- |               |  [if dog]      |                    |                    |
- |               |                |--predict(path)---->|                    |
- |               |                |<--[{label,score}]--|                    |
- |               |                |                    |                    |
- |               |                |--generate_advice(breed)-->             |
- |               |                |    (chat_completion HTTPS)------------>|
- |               |                |<--------------------------advice text---|
- |               |                |                    |                    |
- |               |<--{breed, advice, raw_predictions}--|                    |
- |<--render------|                |                    |                    |
-```
+![UML Interaction Sequence Diagram](../../pictures/interaction-sequence.png)
 
 ## Behaviour
 
