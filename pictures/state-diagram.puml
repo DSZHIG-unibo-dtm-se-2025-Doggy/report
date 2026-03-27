@@ -1,0 +1,24 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam state {
+  BackgroundColor #f9f9f9
+  BorderColor #555
+}
+
+title Doggy - UI State Diagram
+
+[*] --> Idle
+
+state Idle
+state Analyzing
+state ResultDisplayed
+state ErrorDisplayed
+
+Idle --> Analyzing : user submits image
+Analyzing --> ResultDisplayed : API returns success\nset result, clear error
+Analyzing --> ErrorDisplayed : API returns error\nset error, clear result
+ResultDisplayed --> Analyzing : user submits another image
+ErrorDisplayed --> Analyzing : user retries with another image
+
+@enduml

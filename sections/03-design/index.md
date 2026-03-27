@@ -262,6 +262,12 @@ Two components are responsible for state changes:
 
 **Backend API** — owns one implicit shared state: the singleton model instances (`dog_model`, `llm`) held in module-level globals. Initialised lazily on the first incoming request and reused for all subsequent ones. Never mutated after initialisation.
 
+### State diagram
+
+The following state diagram complements the activity diagram by focusing only on the **UI/request states** visible in the frontend lifecycle: idle, analyzing, success, and error.
+
+![UML State Diagram](../../pictures/state-diagram.png)
+
 ### Activity diagram
 
 The diagram below shows the full request flow from image upload to rendered result, covering lazy initialisation and the dog-check decision branch.
@@ -271,6 +277,12 @@ The diagram below shows the full request flow from image upload to rendered resu
 ## Data-related aspects (in case persistent storage is needed)
 
 Doggy does not use persistent storage. All data is handled in-memory and discarded after each response. There is no database, no file store, and no session persistence.
+
+### Data-flow diagram
+
+The following data-flow diagram complements the sequence diagram by focusing on the **data artifacts** exchanged across frontend, backend, model services, and the external inference API.
+
+![Data-flow Diagram](../../pictures/data-flow-diagram.png)
 
 ### No data needs to be stored
 

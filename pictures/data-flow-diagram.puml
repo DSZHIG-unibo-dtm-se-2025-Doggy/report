@@ -1,0 +1,27 @@
+@startuml
+skinparam backgroundColor white
+skinparam shadowing false
+left to right direction
+
+title Doggy - Data Flow Diagram
+
+actor User
+rectangle "Web Client\n(React + Vite)" as Web
+rectangle "Backend API\n(FastAPI)" as Api
+rectangle "DogRecognitionModel\n(in-process)" as Dog
+rectangle "DogLLMEngine\n(in-process)" as Llm
+cloud "Hugging Face Inference API" as Hf
+
+User --> Web : image file
+Web --> Api : multipart/form-data\nfile=image
+Api --> Dog : temp image path
+Dog --> Api : dog check result\nraw_predictions
+Api --> Api : normalize top breed label
+Api --> Llm : normalized breed label
+Llm --> Hf : prompt with breed context
+Hf --> Llm : generated advice text
+Llm --> Api : advice text
+Api --> Web : JSON response\n{breed, advice, raw_predictions}\nor {error}
+Web --> User : rendered breed + advice\nor error message
+
+@enduml
