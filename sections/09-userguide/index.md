@@ -58,7 +58,7 @@ On the main screen:
 - Accepted formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
 - If the file is not a dog, the app will display an error message: `Sorry, this is not a dog. Please try again`.
 
-Once uploaded, the backend endpoint `/api/dog-from-photo` is called and the result appears.
+Once uploaded, the backend endpoint `/api/v1/dog-from-photo` is called and the result appears.
 
 ### Screenshots
 
@@ -102,4 +102,3 @@ Analysis result view:
 - If the backend fails to start, check logs for missing packages (`transformers`, `pillow`) and missing `HF_TOKEN`.
 - If Fly.io deployment does not respond, retry later or switch to a local run mode.
 - If response is slow on first request, wait for model lazy loading to finish.
-

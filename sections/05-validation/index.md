@@ -9,7 +9,7 @@ nav_order: 6
 ## Testing approach
 
 We followed a **risk-based and incremental testing approach**:
-- start from critical backend flow (`POST /api/dog-from-photo`) and verify success/error paths first;
+- start from critical backend flow (`POST /api/v1/dog-from-photo`) and verify success/error paths first;
 - isolate external dependencies (ML/LLM) with test doubles to keep tests deterministic and fast;
 - add regression tests when fixing bugs (e.g., non-dog input, breed-label normalization, prediction errors);
 - keep a lightweight frontend smoke test to ensure the app renders correctly.
@@ -97,7 +97,7 @@ Results (latest local run):
 Integration tests validated collaboration between API layer and domain services.
 
 Main component couples tested:
-- **FastAPI `/api/dog-from-photo` endpoint + `DogRecognitionModel` + `DogLLMEngine`** (`test_dog_from_photo.py`).
+- **FastAPI `/api/v1/dog-from-photo` endpoint + `DogRecognitionModel` + `DogLLMEngine`** (`test_dog_from_photo.py`).
   Rationale: verify end-to-end orchestration for the main user flow ([FR1](../02-requirements/index.md#fr1), [FR3](../02-requirements/index.md#fr3), [FR4](../02-requirements/index.md#fr4)), including:
   - non-dog rejection path;
   - successful breed + advice response path;

@@ -28,7 +28,7 @@ Use GitHub issues for planning and backlog; no additional tools are required.
 - Frontend is TypeScript + React; follow common React best practices.
 - File names use snake_case for Python. Frontend currently uses mostly PascalCase for React pages/components; keep existing style consistent within each folder.
 - Commit messages use Conventional Commits format:
-  - `feat(api): add /api/dog-from-photo endpoint`
+  - `feat(api): add /api/v1/dog-from-photo endpoint`
   - `fix(core): handle non-dog upload with error message`
   - `chore(deps): update transformers package`
 
@@ -79,7 +79,7 @@ Use GitHub issues for planning and backlog; no additional tools are required.
 3. Stage and commit using Conventional Commits:
    ```bash
    git add .
-   git commit -m "feat(api): add /api/dog-advice endpoint"
+   git commit -m "feat(api): add GET /api/v1/dog-advice endpoint"
    ```
 4. Push and open PR:
    ```bash
@@ -103,6 +103,5 @@ Use GitHub issues for planning and backlog; no additional tools are required.
 - CI/CD: GitHub Actions workflows in `.github/workflows` (`backend-ci.yml`, `web-ci.yml`, `backend-deploy.yml`). Ensure all tests pass before PR merge.
 
 - Browser tools: use Chrome/Edge DevTools and React DevTools for front-end debugging.
-- Model debugging: inspect backend logs for `transformers` model load paths and gather latency from the `/api/dog-from-photo` request timings.
-
+- Model debugging: inspect backend logs for `transformers` model load paths and gather latency from the `/api/v1/dog-from-photo` request timings.
 

@@ -118,7 +118,7 @@ Development note: in local mode, the frontend uses `VITE_API_BASE_URL` to call t
 - **Analysis Orchestration Context (Backend API)**: request lifecycle orchestration and response aggregation.  
   - ephemeral aggregate `PhotoAnalysis`
   - value objects `BreedLabel`, `RawPrediction`, `AdviceText`, `AnalysisResult`
-  - application service `/api/dog-from-photo`
+  - application service `/api/v1/dog-from-photo`
   - factories/initialization `_get_dog_model()`, `_get_llm()`
   - repositories: not used (no persistent domain storage)
   - relevant events `PhotoReceived`, `DogCheckPassed` / `DogCheckFailed`, `BreedPredicted`, `AdviceRequested`, `AdviceReceived`, `AnalysisCompleted`
@@ -207,7 +207,7 @@ All component communication is **on-demand** — triggered only when the user su
 
 | From | To | When | Protocol | What |
 |------|----|------|----------|------|
-| Web Client | Backend API | User submits image | HTTP POST `/api/dog-from-photo` | `multipart/form-data` with image file |
+| Web Client | Backend API | User submits image | HTTP POST `/api/v1/dog-from-photo` | `multipart/form-data` with image file |
 | Backend API | Web Client | Analysis complete | HTTP response (JSON) | `{breed, advice, raw_predictions}` or `{error}` |
 | Backend API | `DogRecognitionModel` | On every photo request | In-process method call | image file path |
 | `DogRecognitionModel` | Backend API | After dog check | Return value | `bool` (is dog or not) |
@@ -220,7 +220,7 @@ All component communication is **on-demand** — triggered only when the user su
 
 **Frontend ↔ Backend: Request/Response over HTTP**
 
-The frontend sends a single `POST /api/dog-from-photo` request with the image as `multipart/form-data`. It then waits synchronously for the backend to complete all processing steps and return one aggregated JSON response. The frontend shows a loading state during this wait.
+The frontend sends a single `POST /api/v1/dog-from-photo` request with the image as `multipart/form-data`. It then waits synchronously for the backend to complete all processing steps and return one aggregated JSON response. The frontend shows a loading state during this wait.
 
 On error (not a dog, model failure, invalid input), the backend returns `{"error": "..."}` and the frontend displays the message.
 
@@ -273,7 +273,7 @@ The following state diagram complements the activity diagram by focusing only on
 
 The diagram below shows the full request flow from image upload to rendered result, covering lazy initialisation and the dog-check decision branch.
 
-![Activity Diagram – POST /api/dog-from-photo](../../pictures/behaviour-activity.png)
+![Activity Diagram – POST /api/v1/dog-from-photo](../../pictures/behaviour-activity.png)
 
 ## Data-related aspects (in case persistent storage is needed)
 

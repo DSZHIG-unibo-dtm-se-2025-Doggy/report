@@ -29,8 +29,8 @@ The system uses a FastAPI backend and React frontend with ML inference.
 
 | ID | Description | Acceptance Criteria | Done / Evidence |
 |----|-------------|---------------------|-----------------|
-| <a id="fr1"></a>**FR1** | `POST /api/dog-from-photo` accepts file and returns result. | JSON contains `breed`, `raw_predictions`, `advice`; or `error` for non-dog input. | Done. See `artifact/backend/Core/router.py` and `artifact/backend/tests/test_dog_from_photo.py`. |
-| <a id="fr2"></a>**FR2** | `POST /api/dog-advice?breed=<name>` returns breed advice. | JSON contains `advice`. | Done. See `artifact/backend/Core/router.py` and `artifact/openapi/openapi.yaml`. |
+| <a id="fr1"></a>**FR1** | `POST /api/v1/dog-from-photo` accepts file and returns result. | JSON contains `breed`, `raw_predictions`, `advice`; or `error` for non-dog input. | Done. See `artifact/backend/Core/router.py` and `artifact/backend/tests/test_dog_from_photo.py`. |
+| <a id="fr2"></a>**FR2** | `GET /api/v1/dog-advice?breed=<name>` returns breed advice. | JSON contains `advice`. | Done. See `artifact/backend/Core/router.py` and `artifact/openapi/openapi.yaml`. |
 | <a id="fr3"></a>**FR3** | Non-dog input gets a clear error. | JSON contains `error`: "Sorry, this is not a dog. Please try again". | Done. See `artifact/backend/tests/test_dog_from_photo.py` (`test_non_dog_returns_error`). |
 | <a id="fr4"></a>**FR4** | Backend uses DogRecognition and LLM modules. | `backend/Features/DogRecognition/dog_recognition.py` and `backend/Features/LLM/llm_engine.py` are active. | Done. See `artifact/backend/Features/DogRecognition/dog_recognition.py`, `artifact/backend/Features/LLM/llm_engine.py`, and `artifact/backend/Core/router.py`. |
 | <a id="fr5"></a>**FR5** | Health endpoint available. | `GET /` returns `{"status":"ok","message":"backend is running"}`. | Done. See `artifact/backend/main.py` and AT-5 in `sections/05-validation/index.md`. |
@@ -72,8 +72,8 @@ The system uses a FastAPI backend and React frontend with ML inference.
 
 ## Acceptance Criteria
 
-- [FR1](#fr1): `/api/dog-from-photo` returns breed/advice (or error response). 
-- [FR2](#fr2): `/api/dog-advice` returns advice.
+- [FR1](#fr1): `/api/v1/dog-from-photo` returns breed/advice (or error response). 
+- [FR2](#fr2): `GET /api/v1/dog-advice` returns advice.
 - [FR3](#fr3): non-dog returns `error` message.
 - [NFR1](#nfr1): response time is acceptable for interactive use and loading state is visible during analysis.
 - [NFR2](#nfr2): automated deploy, health endpoint, and documented recovery steps are in place.

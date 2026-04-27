@@ -12,7 +12,7 @@ The project uses Git on GitHub as a distributed version control system. Developm
 
 The main branch always contains stable code.
 
-Commit messages follow the Conventional Commits style: `type(optional context): short description`. For example: `feat(api): add /api/dog-from-photo endpoint`. This makes it easy to understand which part of the project a change affects and also supports automatic versioning and changelog generation during the release process.
+Commit messages follow the Conventional Commits style: `type(optional context): short description`. For example: `feat(api): add /api/v1/dog-from-photo endpoint`. This makes it easy to understand which part of the project a change affects and also supports automatic versioning and changelog generation during the release process.
 
 Issues are used to track bugs, enhancements, and planned improvements, creating a clear backlog of work and improving collaboration.
 
